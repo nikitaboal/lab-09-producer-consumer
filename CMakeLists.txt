@@ -28,13 +28,20 @@ string(APPEND CMAKE_CXX_FLAGS " -Wshadow -Wnon-virtual-dtor")
 
 # new versions of cmake contain gtest search files
 # commented out to increase the build speed.
-# hunter_add_package(GTest)
+hunter_add_package(GTest)
 find_package(GTest CONFIG REQUIRED)
+
+hunter_add_package(Boost COMPONENTS filesystem program_options)
+find_package(Boost CONFIG REQUIRED filesystem program_options)
+hunter_add_package(OpenSSL)
+find_package(OpenSSL REQUIRED)
+hunter_add_package(gumbo)
+find_package(gumbo CONFIG REQUIRED)
 
 add_library(${PROJECT_NAME} STATIC
   # enum your files and delete this comment
-  ${CMAKE_CURRENT_SOURCE_DIR}/sources/example.cpp
-)
+        ${CMAKE_CURRENT_SOURCE_DIR}/sources/parser.cpp
+        include/sertificate.h)
 
 add_executable(demo
   ${CMAKE_CURRENT_SOURCE_DIR}/demo/main.cpp
@@ -46,6 +53,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 )
 
 target_link_libraries(demo ${PROJECT_NAME})
+target_link_libraries(${PROJECT_NAME} gumbo::gumbo Boost::program_options OpenSSL::SSL)
 
 if(BUILD_TESTS)
   add_executable(tests
